@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 from io import BytesIO
 from unittest.mock import patch, MagicMock
-from gdpr_obfuscator.obfuscator import load_csv_from_s3, obfuscate_pii, save_csv_to_s3
+from gdpr_obfuscator.obfuscator import load_csv_from_s3, obfuscate_pii, save_csv_to_s3, process_csv
 
 @pytest.fixture
 def sample_dataframe():
@@ -52,3 +52,13 @@ def test_save_csv_to_s3(mock_boto3, sample_dataframe):
     assert "obfuscated.csv" in kwargs["Key"]
     assert "John Smith" in kwargs["Body"].decode()
 
+@patch("gdpr_obfuscator.obfuscator.load_csv_from_s3")
+@patch("gdpr_obfuscator.obfuscator.save_csv_to_s3")
+def test_process_csv(mock_save, mock_load, sample_dataframe):
+    """Test the full obfuscation process from S3 loading to saving."""
+    mock_load.return_value = sample_dataframe
+
+    process_csv("s3://test-bucket/input.csv", ["name", "email_address"], "s3://test-bucket/output.csv")
+
+    mock_load.assert_called_once_with("s3://test-bucket/input.csv")
+    mock_save.assert_called_once()

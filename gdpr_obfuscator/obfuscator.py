@@ -30,3 +30,9 @@ def save_csv_to_s3(data: pd.DataFrame, output_s3_path: str):
     data.to_csv(csv_buffer, index=False)
 
     s3.put_object(Bucket=bucket, Key=key, Body=csv_buffer.getvalue().encode("utf-8"))
+
+def process_csv(file_to_obfuscate: str, pii_fields: list, output_s3_path: str):
+    """Main function to load, obfuscate, and save CSV data."""
+    df = load_csv_from_s3(file_to_obfuscate)
+    df_obfuscated = obfuscate_pii(df, pii_fields)
+    save_csv_to_s3(df_obfuscated, output_s3_path)
