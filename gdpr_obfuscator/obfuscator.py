@@ -20,3 +20,13 @@ def obfuscate_pii(data: pd.DataFrame, pii_fields: list):
     """Replace specified PII fields with '***'."""
     data[pii_fields] = "***"
     return data
+
+def save_csv_to_s3(data: pd.DataFrame, output_s3_path: str):
+    """Save the DataFrame as a CSV file to S3."""
+    s3 = boto3.client("s3")
+    bucket, key = output_s3_path.replace("s3://", "").split("/", 1)
+
+    csv_buffer = StringIO()
+    data.to_csv(csv_buffer, index=False)
+
+    s3.put_object(Bucket=bucket, Key=key, Body=csv_buffer.getvalue().encode("utf-8"))
