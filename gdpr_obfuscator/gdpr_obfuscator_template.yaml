@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: GDPR Obfuscator AWS Lambda Deployment Template
+
+Resources:
+  GDPRObfuscatorLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: gdpr-obfuscator-lambda
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.8
+      CodeUri: .
+      Timeout: 60
+      MemorySize: 128
+      Environment:
+        Variables:
+          LOG_LEVEL: INFO
+      Policies:
+        - S3ReadPolicy:
+            BucketName: my-ingestion-bucket  # Replace with your actual bucket name
+        - S3WritePolicy:
+            BucketName: my-output-bucket      # Replace with your actual bucket name

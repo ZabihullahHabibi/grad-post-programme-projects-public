@@ -16,9 +16,9 @@ def test_obfuscate_pii():
     )
     pii_fields = ["name", "email"]
     df_obfuscated = obfuscate_pii(df.copy(), pii_fields)
-    assert (df_obfuscated["name"] == "***").all()
-    assert (df_obfuscated["email"] == "***").all()
-    assert (df_obfuscated["age"] == [30]).all()
+    assert (df_obfuscated["name"] == "***").all()  # nosec
+    assert (df_obfuscated["email"] == "***").all()  # nosec
+    assert (df_obfuscated["age"] == [30]).all()  # nosec
 
 
 @patch("gdpr_obfuscator.obfuscator.boto3.client")
@@ -31,9 +31,9 @@ def test_load_file_from_s3_csv(mock_boto_client):
     mock_boto_client.return_value = mock_s3
 
     df = load_file_from_s3("s3://test-bucket/test.csv")
-    assert not df.empty
-    assert list(df.columns) == ["name", "email"]
-    assert df.iloc[0]["name"] == "John Doe"
+    assert not df.empty  # nosec
+    assert list(df.columns) == ["name", "email"]  # nosec
+    assert df.iloc[0]["name"] == "John Doe"  # nosec
 
 
 @patch("gdpr_obfuscator.obfuscator.boto3.client")
@@ -46,16 +46,15 @@ def test_load_file_from_s3_json(mock_boto_client):
     mock_boto_client.return_value = mock_s3
 
     df = load_file_from_s3("s3://test-bucket/test.json")
-    assert not df.empty
-    assert list(df.columns) == ["name", "email"]
-    assert df.iloc[0]["name"] == "John Doe"
+    assert not df.empty  # nosec
+    assert list(df.columns) == ["name", "email"]  # nosec
+    assert df.iloc[0]["name"] == "John Doe"  # nosec
 
 
 @patch("gdpr_obfuscator.obfuscator.boto3.client")
 def test_load_file_from_s3_parquet(mock_boto_client):
     # Create a sample DataFrame and convert it to Parquet bytes
-    df_original = pd.DataFrame(
-        {"name": ["John Doe"], "email": ["john@example.com"]})
+    df_original = pd.DataFrame({"name": ["John Doe"], "email": ["john@example.com"]})
     buffer = BytesIO()
     df_original.to_parquet(buffer, index=False)
     parquet_bytes = buffer.getvalue()
@@ -80,10 +79,10 @@ def test_save_file_to_s3_csv(mock_boto_client):
     mock_s3.put_object.assert_called_once()
     args, kwargs = mock_s3.put_object.call_args
     bucket, key = output_path.replace("s3://", "").split("/", 1)
-    assert kwargs["Bucket"] == bucket
-    assert key in kwargs["Key"]
+    assert kwargs["Bucket"] == bucket  # nosec
+    assert key in kwargs["Key"]  # nosec
     body = kwargs["Body"].decode("utf-8")
-    assert "John Doe" in body
+    assert "John Doe" in body  # nosec
 
 
 @patch("gdpr_obfuscator.obfuscator.boto3.client")
@@ -98,7 +97,7 @@ def test_save_file_to_s3_json(mock_boto_client):
     mock_s3.put_object.assert_called_once()
     args, kwargs = mock_s3.put_object.call_args
     body = kwargs["Body"].decode("utf-8")
-    assert "John Doe" in body
+    assert "John Doe" in body  # nosec
 
 
 @patch("gdpr_obfuscator.obfuscator.boto3.client")
@@ -125,8 +124,9 @@ def test_process_file(mock_load, mock_save):
         {"name": ["John Doe"], "email": ["john@example.com"], "age": [30]}
     )
     mock_load.return_value = df
-    process_file("s3://test-bucket/input.csv",
-                 ["name", "email"], "s3://test-bucket/output.csv")
+    process_file(
+        "s3://test-bucket/input.csv", ["name", "email"], "s3://test-bucket/output.csv"
+    )
     df_expected = df.copy()
     df_expected[["name", "email"]] = "***"
     mock_save.assert_called_once()
