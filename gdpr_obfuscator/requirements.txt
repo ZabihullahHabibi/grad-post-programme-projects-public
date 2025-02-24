@@ -1,6 +1,12 @@
-boto3
-pandas
-pytest
-mypy
-bandit
-flake8
+# Production dependencies
+boto3==1.26.0
+pandas==1.5.3
+
+# Testing dependencies
+pytest==7.2.2
+pytest-mock==3.10.0
+
+# Code quality / formatting dependencies
+flake8==6.1.0
+bandit==1.7.5
+black==23.3.0
