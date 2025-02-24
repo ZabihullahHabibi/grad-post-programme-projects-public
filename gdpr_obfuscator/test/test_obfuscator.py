@@ -33,15 +33,15 @@ def test_load_csv_from_s3(mock_boto_client):
 
     df = load_csv_from_s3("s3://test-bucket/test.csv")
 
-    assert not df.empty
+    assert not df.empty # nosec
     assert list(df.columns) == [
         "student_id",
         "name",
         "course",
         "graduation_date",
         "email_address",
-    ]
-    assert df.loc[0, "name"] == "John Smith"
+    ] # nosec
+    assert df.loc[0, "name"] == "John Smith" # nosec
 
 
 def test_obfuscate_pii(sample_dataframe):
@@ -49,10 +49,10 @@ def test_obfuscate_pii(sample_dataframe):
     pii_fields = ["name", "email_address"]
     obfuscated_df = obfuscate_pii(sample_dataframe, pii_fields)
 
-    assert obfuscated_df["name"].iloc[0] == "***"
-    assert obfuscated_df["email_address"].iloc[0] == "***"
+    assert obfuscated_df["name"].iloc[0] == "***" # nosec
+    assert obfuscated_df["email_address"].iloc[0] == "***" # nosec
     # Non-PII field remains unchanged
-    assert obfuscated_df["course"].iloc[0] == "Software"
+    assert obfuscated_df["course"].iloc[0] == "Software" # nosec
 
 
 @patch("gdpr_obfuscator.gdpr_obfuscator.obfuscator.boto3.client")
@@ -63,10 +63,10 @@ def test_save_csv_to_s3(mock_boto_client, sample_dataframe):
 
     mock_s3.put_object.assert_called_once()
     args, kwargs = mock_s3.put_object.call_args
-    assert kwargs["Bucket"] == "test-bucket"
-    assert "obfuscated.csv" in kwargs["Key"]
+    assert kwargs["Bucket"] == "test-bucket" # nosec
+    assert "obfuscated.csv" in kwargs["Key"] # nosec
     # Validate that the CSV content contains the sample data
-    assert "John Smith" in kwargs["Body"].decode()
+    assert "John Smith" in kwargs["Body"].decode() # nosec
 
 
 @patch("gdpr_obfuscator.gdpr_obfuscator.obfuscator.load_csv_from_s3")

@@ -16,4 +16,4 @@ def test_lambda_handler(mock_process):
         event["file_to_obfuscate"], event["pii_fields"], expected_output_file
     )
     assert response == {
-        "status": "success", "output_file": expected_output_file}
+        "status": "success", "output_file": expected_output_file} # nosec
