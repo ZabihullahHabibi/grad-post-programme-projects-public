@@ -17,6 +17,6 @@ The GDPR Obfuscator is a Python library designed to anonymize personally identif
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/ZabihullahHabibi/grad-post-programme-projects.git
+git clone https://github.com/ZabihullahHabibi/grad-post-programme-projects-public.git
 cd grad-post-programme-projects
 pip install -r requirements.txt
